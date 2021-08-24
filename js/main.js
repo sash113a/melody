@@ -6,8 +6,13 @@ $(document).ready(function () {
   var modal = $(".modal");
   var modalCloseButton = $(".modal-close-button");
   var viewFlatsButton = $(".view-flats");
+  var currentFlat = 0; //  переменная, где хранится текущая квартира
+  var flatPath = $(".flats path"); // переменная каждой отдельной квартиры в SVG
+  var allFlatWithLink = $(".flat-list .flat-item .flat-link"); // переменная, где хранится список квартир, квартиры и ссылка на квартиру
+  var allFlat = $(".flat-list .flat-item"); // переменная, где хранится список квартир и квартиры
+  var flatList = $(".flat-list"); // переменная, где хранится список квартир
 
-  // ункция при наведении мышью на этаж
+  // функция при наведении мышью на этаж
   floorPath.on("mouseover", function () {
     floorPath.removeClass("current-floor"); // удаляем активный класс у этажей
     currentFloor = $(this).attr("data-floor"); // получаем значение текущего этажа
@@ -33,6 +38,7 @@ $(document).ready(function () {
       $(`[data-floor=${usCurrentFloor}]`).toggleClass("current-floor"); // подсвечиваем текущий этаж
     }
   });
+
   // отслеживаем клик по кнопке вниз
   counterDown.on("click", function () {
     // проверяем значение этажа на минимум = 1
@@ -52,5 +58,26 @@ $(document).ready(function () {
   // функция открыть/закрыть окно
   function toggleModle() {
     modal.toggleClass("is-open");
+  }
+
+  flatPath.on("mouseenter", highlightFlat); // при наведении на квартиру подсветить её справа
+  flatPath.on("mouseleave", highlightFlat); // мышь покидает квартиру - убрать подсветку справа
+
+  // при наведении на квартиру из списка, подсветить её на рисунке слева
+  flatList.on("mouseenter", ".flat-item", highlightCurrentFlat);
+  // мышь покидает квартиру из списка - убрать подсветку на рисунке слева
+  flatList.on("mouseleave", ".flat-item", highlightCurrentFlat);
+
+  // функция подсветить квартиру
+  function highlightFlat() {
+    currentFlat = $(this).attr("data-flat"); // получаем порядковый номер текущей кв. на этаже
+    $(allFlatWithLink.eq(currentFlat - 1).toggleClass("flat-link-hover")); // подсвечиваем значение текущей кв. справа
+  }
+
+  // функция
+  // при выборе квартиры из списка справа, она должна подсвечиваться на рисунке слева
+  function highlightCurrentFlat() {
+    currentFlat = allFlat.index(this) + 1; // получаем порядковый номер квартиры из списка справа
+    $(`[data-flat=${currentFlat}]`).toggleClass("current-flat"); // находим и подсвечиваем квартиру на рисунке слева
   }
 });
